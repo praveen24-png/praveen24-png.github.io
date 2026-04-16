@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praveen P — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a28;
+    --accent: #6ee7b7;
+    --accent2: #a78bfa;
+    --accent3: #fbbf24;
+    --text: #e8e8f0;
+    --muted: #6b7280;
+    --border: rgba(110,231,183,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; top: -100px; left: -100px;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: top 0.08s ease, left 0.08s ease;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    position: fixed; top: -100px; left: -100px;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.7;
+  }
+  @media (pointer: coarse) {
+    .cursor, .cursor-ring { display: none; }
+  }
+
+  #doodle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.55;
+  }
+
+  nav { z-index: 200; position: relative; }
+  .hero, section, footer { z-index: 10; position: relative; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.8);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .nav-links { display: flex; gap: 2.5rem; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(110,231,183,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: 20%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    width: 100%;
+    max-width: 1200px;
+  }
+  .hero-left { display: flex; flex-direction: column; justify-content: center; }
+  .photo-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+  .profile-photo {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    display: block;
+    position: relative;
+    z-index: 1;
+    filter: grayscale(20%);
+    transition: filter 0.3s;
+  }
+  .profile-photo:hover { filter: grayscale(0%); }
+  .photo-ring {
+    position: absolute;
+    top: -6px; left: -6px;
+    width: 122px; height: 122px;
+    border-radius: 50%;
+    border: 1px dashed rgba(110,231,183,0.4);
+    animation: spin 12s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+  .hero-tag::before { content: '//'; opacity: 0.5; }
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.35s forwards;
+  }
+  .hero-name span { color: var(--accent); }
+  .hero-title {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.5s forwards;
+  }
+  .hero-desc {
+    font-size: 0.82rem;
+    line-height: 1.9;
+    color: rgba(232,232,240,0.7);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.65s forwards;
+  }
+  .hero-cta {
+    display: flex; gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.8s forwards;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--accent);
+    color: #0a0a0f;
+    padding: 0.8rem 1.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: none;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(110,231,183,0.25); }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.8rem 1.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-right {
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.8s forwards;
+  }
+  .code-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+  .code-header {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.red { background: #ff6b6b; }
+  .dot.yellow { background: #ffd93d; }
+  .dot.green { background: var(--accent); }
+  .code-file { font-size: 0.65rem; color: var(--muted); margin-left: auto; }
+  .code-line { font-size: 0.72rem; line-height: 2; }
+  .kw { color: var(--accent2); }
+  .fn { color: var(--accent3); }
+  .str { color: var(--accent); }
+  .cmt { color: #4b5563; font-style: italic; }
+  .num { color: #f472b6; }
+
+  .stats-row {
+    display: flex; gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  section { padding: 6rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  .section-label::before { content: '[ '; }
+  .section-label::after { content: ' ]'; }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+    line-height: 1;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .skill-card:hover { border-color: rgba(110,231,183,0.3); transform: translateY(-4px); }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-icon {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .skill-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+  .tag {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .exp-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 3rem;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: 200px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    opacity: 0.2;
+    transform: translateX(-1.5rem);
+  }
+  .exp-meta { padding-top: 0.2rem; }
+  .exp-company {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .exp-period { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; }
+  .exp-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .exp-points { list-style: none; }
+  .exp-points li {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: rgba(232,232,240,0.75);
+    padding-left: 1.2rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+  }
+  .exp-points li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    transition: border-color 0.3s;
+  }
+  .project-card:hover { border-color: rgba(110,231,183,0.3); }
+  .project-label {
+    font-size: 0.6rem;
+    color: var(--accent3);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+  }
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .project-desc {
+    font-size: 0.78rem;
+    line-height: 1.9;
+    color: rgba(232,232,240,0.7);
+    margin-bottom: 1.5rem;
+  }
+  .project-tech { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tech-badge {
+    font-size: 0.62rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(110,231,183,0.08);
+    border: 1px solid rgba(110,231,183,0.2);
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .cert-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    transition: border-color 0.3s;
+  }
+  .cert-item:hover { border-color: rgba(110,231,183,0.3); }
+  .cert-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: rgba(110,231,183,0.1);
+    border: 1px solid rgba(110,231,183,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .cert-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.82rem; margin-bottom: 0.3rem; }
+  .cert-org { font-size: 0.65rem; color: var(--muted); }
+
+  .edu-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  }
+  .edu-school { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .edu-degree { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+  .edu-period { font-size: 0.65rem; color: var(--muted); }
+  .edu-grade {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: var(--accent);
+    text-align: right;
+  }
+  .edu-grade small { font-size: 0.6rem; color: var(--muted); display: block; font-family: 'DM Mono', monospace; font-weight: 400; }
+
+  .contact-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+  }
+  .contact-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(110,231,183,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .contact-section .section-title { margin-bottom: 0.75rem; }
+  .contact-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 2.5rem; }
+  .contact-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; }
+  .contact-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.72rem;
+    text-decoration: none;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+  .contact-link span { font-size: 1rem; }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.25rem 2rem; }
+    .nav-links { display: none; }
+    .hero { padding: 6rem 2rem 3rem; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    section { padding: 4rem 2rem; }
+    .exp-item { grid-template-columns: 1fr; gap: 1rem; }
+    .exp-item::before { display: none; }
+    .contact-section { padding: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="doodle-canvas"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="nav-logo">PRAVEEN.P</div>
+  <div class="nav-links">
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#project">Project</a>
+    <a href="#certifications">Certifications</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="photo-wrap">
+        <img src="photo.jpg" alt="Praveen P" class="profile-photo" />
+        <div class="photo-ring"></div>
+      </div>
+      <div class="hero-tag">Currently @ Say IT · Open to opportunities</div>
+      <h1 class="hero-name">Praveen<br><span>P</span></h1>
+      <div class="hero-title">Full Stack Developer · React · Node.js · SAP ABAP · Manual Tester</div>
+      <p class="hero-desc">B.Tech IT graduate from Sri Sairam Institute of Technology, Chennai. Currently working at Say IT as a Full Stack Developer, building a complete MBBS college ERP system — both Frontend (React + Vite) and Backend (Node.js + MySQL). Passionate about enterprise software and SAP ABAP on S/4HANA.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn-primary">Get in touch →</a>
+        <a href="#experience" class="btn-outline">View work</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="code-card">
+        <div class="code-header">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+          <div class="code-file">developer.jsx</div>
+        </div>
+        <div>
+          <div class="code-line"><span class="kw">CLASS</span> <span class="fn">praveen_p</span> <span class="kw">DEFINITION</span>.</div>
+          <div class="code-line">&nbsp;&nbsp;<span class="kw">PUBLIC SECTION</span>.</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">DATA</span>: role   <span class="kw">TYPE</span> string</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VALUE <span class="str">'Full Stack Dev'</span>,</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stack  <span class="kw">TYPE</span> string</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VALUE <span class="str">'React+Node+MySQL'</span>,</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cgpa   <span class="kw">TYPE</span> decfloat16</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VALUE <span class="num">7.9</span>.</div>
+          <div class="code-line"><span class="kw">ENDCLASS</span>.</div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="cmt">" UCT ERP: 29 modules · 150+ submodules</span></div>
+          <div class="code-line"><span class="cmt">" Stack: React · Vite · Node.js · MySQL</span></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-val">7.9</span><span class="stat-label">CGPA</span></div>
+          <div class="stat"><span class="stat-val">1100+</span><span class="stat-label">Problems</span></div>
+          <div class="stat"><span class="stat-val">35d</span><span class="stat-label">SAP Training</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<section id="skills">
+  <div class="section-label">Expertise</div>
+  <h2 class="section-title">Skills & Technologies</h2>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <span class="skill-icon">🔷</span>
+      <div class="skill-name">SAP ABAP / S4HANA</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7">Enterprise application development on SAP HANA platform with hands-on training at Wipro.</div>
+      <div class="skill-tags">
+        <span class="tag">ALV Reports</span><span class="tag">Module Pools</span><span class="tag">Smart Forms</span>
+        <span class="tag">ODATA</span><span class="tag">CDS Views</span><span class="tag">AMDP</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">🧪</span>
+      <div class="skill-name">Manual Testing</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7">End-to-end software quality assurance following STLC and SDLC methodologies.</div>
+      <div class="skill-tags">
+        <span class="tag">Functional</span><span class="tag">Integration</span><span class="tag">Regression</span>
+        <span class="tag">Smoke</span><span class="tag">Performance</span><span class="tag">DLC</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">🗄️</span>
+      <div class="skill-name">SQL & Databases</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7">Complex query writing, data validation, and database design with constraints.</div>
+      <div class="skill-tags">
+        <span class="tag">Joins</span><span class="tag">Subqueries</span><span class="tag">Aggregates</span>
+        <span class="tag">Indexes</span><span class="tag">Open SQL</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">☕</span>
+      <div class="skill-name">Java & Web</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7">Full-stack foundations through a 6-month course covering core Java, web technologies and SQL.</div>
+      <div class="skill-tags">
+        <span class="tag">Core Java</span><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Angular</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">⚛️</span>
+      <div class="skill-name">React & Frontend Dev</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7">AI-assisted frontend development — architecting and delivering production-grade React applications with full structural control.</div>
+      <div class="skill-tags">
+        <span class="tag">React 18</span><span class="tag">Vite</span><span class="tag">Node.js</span><span class="tag">MySQL</span><span class="tag">ERP Systems</span><span class="tag">Git</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="experience">
+  <div class="section-label">Work & Training</div>
+  <h2 class="section-title">Experience</h2>
+
+  <div class="exp-item" style="border-left: 2px solid var(--accent); padding-left: 1.5rem;">
+    <div class="exp-meta">
+      <div class="exp-company"><a href="https://sayit.co.in/" target="_blank" style="color:var(--accent);text-decoration:none;">Say IT</a></div>
+      <div class="exp-period">2025 – PRESENT · CURRENT ROLE</div>
+      <div style="font-size:0.62rem;color:var(--muted);margin-top:0.4rem;line-height:1.6">Chennai, India</div>
+    </div>
+    <div>
+      <div class="exp-title">Full Stack Developer — React ERP</div>
+      <ul class="exp-points">
+        <li>Developing UCT ERP end-to-end (Frontend + Backend) — a full-scale MBBS college ERP system for Universidade Católica Timorense with 29 modules and 150+ submodules.</li>
+        <li>Frontend: Built the entire React 18 + Vite UI with custom switch-case routing, shared CSS design system, and inline SVG icons — no Tailwind, no Redux, no TypeScript.</li>
+        <li>Backend: Developed RESTful APIs using Node.js and MySQL to power all ERP modules including student records, fee management, HR, examinations, hostel, and transport.</li>
+        <li>Managed full GitHub version control, module architecture, and component design end-to-end as the sole developer.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-meta">
+      <div class="exp-company">Wipro / TECHADEMY</div>
+      <div class="exp-period">35 DAYS · SAP TRAINING</div>
+    </div>
+    <div>
+      <div class="exp-title">SAP ABAP on HANA Trainee</div>
+      <ul class="exp-points">
+        <li>Completed comprehensive SAP ABAP on HANA training with hands-on enterprise application development.</li>
+        <li>Developed ALV Reports, Module Pools, and Smart Forms for real-world reporting and workflow purposes.</li>
+        <li>Gained deep knowledge in Open SQL, Joins, Subqueries, and database programming within SAP HANA.</li>
+        <li>Worked extensively with internal tables, function modules, loops, and ABAP modularization techniques.</li>
+        <li>Hands-on exposure to debugging, performance optimization, and user exits/enhancements.</li>
+        <li>Covered advanced topics: CDS Views, AMDP, ODATA services, and HANA optimizations.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-meta">
+      <div class="exp-company">Vel Tech Pvt. Ltd.</div>
+      <div class="exp-period">NOV 2023 – JAN 2024 · INTERNSHIP</div>
+    </div>
+    <div>
+      <div class="exp-title">Web Developer Intern</div>
+      <ul class="exp-points">
+        <li>Achieved 98% growth in web development performance using CSS, JavaScript, and Angular with strong foundational skills.</li>
+        <li>Designed and implemented responsive websites to support efficient client-server communication.</li>
+        <li>Gained hands-on experience in Angular framework, applying it to real-world web projects in a professional environment.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-meta">
+      <div class="exp-company">Accord Info Matrix</div>
+      <div class="exp-period">6 MONTHS · COURSE</div>
+    </div>
+    <div>
+      <div class="exp-title">Java Full Stack Development</div>
+      <ul class="exp-points">
+        <li>Completed a comprehensive 6-month full-stack development program covering front-end and back-end technologies.</li>
+        <li>Built projects using Core Java, HTML, CSS, JavaScript, and SQL with hands-on practical assignments.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="project">
+  <div class="section-label">Projects</div>
+  <h2 class="section-title">Featured Work</h2>
+
+  <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+  <div class="project-card" style="border-color:rgba(110,231,183,0.35);">
+    <div class="project-label" style="color:var(--accent);">⭐ Featured Project · 2025–2026</div>
+    <div class="project-title">UCT ERP — MBBS College<br>Enterprise Resource Planning System</div>
+    <p class="project-desc">
+      A comprehensive, production-grade ERP system built for Universidade Católica Timorense (UCT), an MBBS medical college. Architected and developed end-to-end as a solo frontend developer using React 18 + Vite, covering 29 modules with 150+ submodules. The system manages the full student lifecycle from admission to alumni, including abroad MBBS tracking, visa & immigration, hostel, examinations, fee management, HR, transport, and more — all wired with a custom switch-case router and shared CSS design system.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">Key Modules</div>
+        <div style="font-size:0.72rem;line-height:1.8;color:rgba(232,232,240,0.7)">Student Management · HR · Fee Management · Examinations · Hostel · Transport · Alumni · Accounts & Finance · Abroad MBBS · Visa & Immigration</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">Architecture</div>
+        <div style="font-size:0.72rem;line-height:1.8;color:rgba(232,232,240,0.7)">29 Modules · 150+ Submodules · Switch-case routing · Shared CSS design system · Inline SVG icons · No Tailwind / No Redux / No TypeScript</div>
+      </div>
+    </div>
+    <div class="project-tech" style="margin-bottom:1.2rem;">
+      <span class="tech-badge">React 18</span>
+      <span class="tech-badge">Vite</span>
+      <span class="tech-badge">Node.js</span>
+      <span class="tech-badge">MySQL</span>
+      <span class="tech-badge">Plain CSS</span>
+      <span class="tech-badge">JavaScript</span>
+      <span class="tech-badge">ERP</span>
+    </div>
+    <a href="https://github.com/ask4coders-cell/UCT_ERP" target="_blank" style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.7rem;color:var(--accent);text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;border:1px solid rgba(110,231,183,0.3);padding:0.5rem 1rem;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(110,231,183,0.3)'">🐙 View on GitHub →</a>
+  </div>
+
+  <div class="project-card">
+    <div class="project-label">🚌 Project 02</div>
+    <div class="project-title">Public Transport Online<br>Booking Application</div>
+    <p class="project-desc">
+      A PEGA-powered seat booking application for public transport. Users can easily book seats, pay via UPI online payment, extend their destination mid-journey, and view the vehicle number plate on-screen to verify they're boarding the correct vehicle. Drivers can access a real-time seat dashboard from anywhere — eliminating the need to wait at pickup points — and instantly see which seats are filled before arrival.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">User Features</div>
+        <div style="font-size:0.72rem;line-height:1.8;color:rgba(232,232,240,0.7)">Seat booking · UPI payment · Destination extension · Vehicle number verification</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">Driver Features</div>
+        <div style="font-size:0.72rem;line-height:1.8;color:rgba(232,232,240,0.7)">Real-time seat dashboard · Remote seat monitoring · Pickup point management</div>
+      </div>
+    </div>
+    <div class="project-tech">
+      <span class="tech-badge">PEGA Platform</span>
+      <span class="tech-badge">Razorpay UPI</span>
+      <span class="tech-badge">UIDAI API</span>
+      <span class="tech-badge">e-KYC</span>
+      <span class="tech-badge">PARIVAHAN</span>
+      <span class="tech-badge">Real-time Processing</span>
+    </div>
+  </div>
+
+  <div class="project-card">
+    <div class="project-label">🌿 Project 03</div>
+    <div class="project-title">Plant Disease Detection<br>Using Python</div>
+    <p class="project-desc">
+      A web-based database system built with Visual Basic 6.0 and MS Access that streamlines plant record management for agriculture. The system replaces manual disease identification with automated monitoring, accurate data retrieval, and pesticide recommendations. Authorized users can add plant details, manage shifts, and access a comprehensive plant database — making it a complete smart agriculture solution.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">Key Features</div>
+        <div style="font-size:0.72rem;line-height:1.8;color:rgba(232,232,240,0.7)">Automated disease detection · Pesticide retrieval · Plant record management · Shift management · Authorized user access</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;">Outcomes</div>
+        <div style="font-size:0.72rem;line-height:1.8;color:rgba(232,232,240,0.7)">Eliminated manual identification · Accurate monitoring · Improved agriculture productivity</div>
+      </div>
+    </div>
+    <div class="project-tech">
+      <span class="tech-badge">Python</span>
+      <span class="tech-badge">Visual Basic 6.0</span>
+      <span class="tech-badge">MS Access</span>
+      <span class="tech-badge">Flutter</span>
+      <span class="tech-badge">Agriculture</span>
+    </div>
+  </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="certifications">
+  <div class="section-label">Credentials</div>
+  <h2 class="section-title">Certifications & Achievements</h2>
+  <div class="cert-grid">
+    <a href="https://www.skillrack.com/cert/443670/IOT" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">C — Input/Output (Video Explanation)</div>
+        <div class="cert-org">SkillRack · May 09, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/443022/VIF" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">C — Intro (Code Solution)</div>
+        <div class="cert-org">SkillRack · May 05, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/443021/LZB" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">C — 50 Very-Easy Challenges</div>
+        <div class="cert-org">SkillRack · May 05, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/441604/DMN" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🥉</div>
+      <div>
+        <div class="cert-name">Bronze Medals — 200</div>
+        <div class="cert-org">SkillRack · Apr 26, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/441603/WSP" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🥉</div>
+      <div>
+        <div class="cert-name">Bronze Medals — 100</div>
+        <div class="cert-org">SkillRack · Apr 26, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/441602/QIO" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">Python 3.x — 50 Very-Easy Challenges</div>
+        <div class="cert-org">SkillRack · Apr 26, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/441601/QAU" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">Java — 50 Very-Easy Challenges</div>
+        <div class="cert-org">SkillRack · Apr 26, 2023 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/248169/OBN" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">Kickstart (Code Solution)</div>
+        <div class="cert-org">SkillRack · Dec 10, 2021 · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://www.skillrack.com/cert/179828/XIH" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🏅</div>
+      <div>
+        <div class="cert-name">C — Programming Course (Hands-On)</div>
+        <div class="cert-org">SkillRack · Mar 12, 2021 · Verified ↗</div>
+      </div>
+    </a>
+    <div class="cert-item">
+      <div class="cert-icon">🔷</div>
+      <div>
+        <div class="cert-name">SAP ABAP on HANA</div>
+        <div class="cert-org">TECHADEMY (Wipro) · 35-day Program</div>
+      </div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">📡</div>
+      <div>
+        <div class="cert-name">NPTEL — IoT & Cloud Computing</div>
+        <div class="cert-org">National Programme on Technology Enhanced Learning</div>
+      </div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">⚖️</div>
+      <div>
+        <div class="cert-name">NPTEL — Ethics in Engineering</div>
+        <div class="cert-org">National Programme on Technology Enhanced Learning</div>
+      </div>
+    </div>
+    <a href="https://badger.learning.sap.com/verify/xybas-rotag-vyhiv-kunyf-sydof" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🔷</div>
+      <div>
+        <div class="cert-name">Learning Basic ABAP Programming</div>
+        <div class="cert-org">SAP Learning · Jan 22, 2026 · Beginner · 16h 54m · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://badger.learning.sap.com/verify/xilum-lecad-mydyl-kokyl-firim" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🔷</div>
+      <div>
+        <div class="cert-name">Deepening Your ABAP Programming Knowledge</div>
+        <div class="cert-org">SAP Learning · Jan 28, 2026 · Beginner · 23h · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://badger.learning.sap.com/verify/xupec-didum-ducob-vobeg-satuc" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🔷</div>
+      <div>
+        <div class="cert-name">Building Data Models with ABAP Dictionary & CDS</div>
+        <div class="cert-org">SAP Learning · Jan 28, 2026 · Intermediate · 20h 57m · Verified ↗</div>
+      </div>
+    </a>
+    <a href="https://badger.learning.sap.com/verify/xygun-vohok-hinok-cemut-lylat" target="_blank" class="cert-item" style="text-decoration:none;color:inherit;">
+      <div class="cert-icon">🔷</div>
+      <div>
+        <div class="cert-name">Practicing Clean Core Extensibility — SAP S/4HANA Cloud</div>
+        <div class="cert-org">SAP Learning · Jan 30, 2026 · Intermediate · 8h 5m · Verified ↗</div>
+      </div>
+    </a>
+    <div class="cert-item">
+      <div class="cert-icon">☕</div>
+      <div>
+        <div class="cert-name">Java Full Stack Development</div>
+        <div class="cert-org">Accord Info Matrix Technologies · 6 Months</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="education">
+  <div class="section-label">Academic Background</div>
+  <h2 class="section-title">Education</h2>
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+    <div class="edu-card">
+      <div>
+        <div class="edu-school">Sri Sairam Institute of Technology, Chennai</div>
+        <div class="edu-degree">B.Tech — Information Technology</div>
+        <div class="edu-period" style="margin-top:0.4rem">2020 — 2024</div>
+      </div>
+      <div>
+        <div class="edu-grade">7.9<small>CGPA</small></div>
+      </div>
+    </div>
+    <div class="edu-card">
+      <div>
+        <div class="edu-school">Holy Queen Matriculation Higher Secondary School</div>
+        <div class="edu-degree">Higher Secondary Education (HSE)</div>
+        <div class="edu-period" style="margin-top:0.4rem">2019 — 2020</div>
+      </div>
+      <div>
+        <div class="edu-grade">65<small>PERCENTILE</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="contact" style="max-width:1200px;margin:0 auto;padding:6rem 4rem;">
+  <div class="section-label" style="margin-bottom:0.75rem">Let's connect</div>
+  <h2 class="section-title">Get In Touch</h2>
+
+  <div id="contact-wrap" style="display:flex;flex-direction:column;align-items:center;gap:3rem;">
+
+    <!-- Photo + Name Card -->
+    <div id="contact-left" style="opacity:0;transform:translateY(30px);transition:all 0.7s ease;text-align:center;">
+      <div style="position:relative;display:inline-block;margin-bottom:1.5rem;">
+        <div style="position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle,rgba(110,231,183,0.25),transparent 70%);animation:pulse-glow 2.5s ease-in-out infinite;"></div>
+        <img src="photo.jpg" alt="Praveen P" style="width:150px;height:150px;object-fit:cover;object-position:center top;border-radius:50%;border:2px solid var(--accent);display:block;position:relative;z-index:1;filter:grayscale(15%);" />
+        <div style="position:absolute;bottom:8px;right:8px;width:16px;height:16px;background:#22c55e;border-radius:50%;border:2px solid var(--bg);z-index:2;animation:blink 1.5s ease-in-out infinite;"></div>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.02em;margin-bottom:0.4rem;">Praveen P</div>
+      <div style="font-size:0.75rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Full Stack Developer</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.8;">Currently @ Say IT · Chennai, India</div>
+    </div>
+
+    <!-- Contact Links -->
+    <div id="contact-right" style="opacity:0;transform:translateY(30px);transition:all 0.7s ease 0.2s;display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;">
+      <a href="tel:+917200752683" class="contact-link-anim"><span>📞</span> +91 72007 52683</a>
+      <a href="mailto:praveenjoshwa240122@gmail.com" class="contact-link-anim"><span>✉️</span> Email Me</a>
+      <a href="https://www.linkedin.com/in/praveen-p-134578208" target="_blank" class="contact-link-anim"><span>💼</span> LinkedIn</a>
+      <a href="https://github.com/praveen24-png" target="_blank" class="contact-link-anim"><span>🐙</span> GitHub</a>
+      <a href="https://www.skillrack.com/faces/resume.xhtml?id=309150&key=461aa4a12038ffc76569f0919ccb9a9fe598340e" target="_blank" class="contact-link-anim"><span>🧩</span> SkillRack</a>
+      <a href="https://www.credly.com/badges/4e8379d4-0b79-4a77-9b83-a07e6fd11e0f" target="_blank" class="contact-link-anim"><span>🔷</span> SAP Certificate</a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .contact-link-anim {
+    display:inline-flex;align-items:center;gap:0.75rem;
+    font-size:0.72rem;color:var(--text);text-decoration:none;
+    letter-spacing:0.06em;padding:0.75rem 1.5rem;
+    border:1px solid var(--border);
+    transition:all 0.25s;position:relative;overflow:hidden;
+  }
+  .contact-link-anim::before {
+    content:'';position:absolute;left:-100%;top:0;
+    width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(110,231,183,0.08),transparent);
+    transition:left 0.4s;
+  }
+  .contact-link-anim:hover { border-color:var(--accent);color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 20px rgba(110,231,183,0.1); }
+  .contact-link-anim:hover::before { left:100%; }
+  @keyframes pulse-glow { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+
+<script>
+  const contactObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        document.getElementById('contact-left').style.opacity='1';
+        document.getElementById('contact-left').style.transform='translateY(0)';
+        document.getElementById('contact-right').style.opacity='1';
+        document.getElementById('contact-right').style.transform='translateY(0)';
+      }
+    });
+  },{threshold:0.2});
+  contactObs.observe(document.getElementById('contact-wrap'));
+</script>
+
+<footer>
+  <div>© 2024 Praveen P · Crafted with precision · Chennai, India</div>
+</footer>
+
+<script>
+  /* ── Doodle Canvas ── */
+  const dc = document.getElementById('doodle-canvas');
+  const ctx = dc.getContext('2d');
+
+  function resize() { dc.width = window.innerWidth; dc.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COLORS = ['#6ee7b7','#a78bfa','#fbbf24','#f472b6','#38bdf8','#fb923c'];
+  const doodles = [];
+
+  function rand(a, b) { return Math.random() * (b - a) + a; }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function createDoodle() {
+    return {
+      x: rand(0, dc.width),
+      y: rand(0, dc.height),
+      type: pick(['star','spiral','squiggle','burst','zigzag','leaf','cross','triangle','wave']),
+      color: pick(COLORS),
+      size: rand(18, 55),
+      rotation: rand(0, Math.PI * 2),
+      rotSpeed: rand(-0.008, 0.008),
+      alpha: rand(0.3, 0.9),
+      alphaDir: rand(-0.003, 0.003),
+      drift: { x: rand(-0.15, 0.15), y: rand(-0.1, 0.08) },
+      phase: rand(0, Math.PI * 2),
+      born: Date.now()
+    };
+  }
+
+  for (let i = 0; i < 55; i++) doodles.push(createDoodle());
+
+  function drawStar(ctx, x, y, r, points, color) {
+    ctx.beginPath();
+    for (let i = 0; i < points * 2; i++) {
+      const a = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
+      const rad = i % 2 === 0 ? r : r * 0.42;
+      i === 0 ? ctx.moveTo(x + Math.cos(a)*rad, y + Math.sin(a)*rad)
+              : ctx.lineTo(x + Math.cos(a)*rad, y + Math.sin(a)*rad);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  function drawSpiral(ctx, x, y, r, color) {
+    ctx.beginPath();
+    for (let i = 0; i < 120; i++) {
+      const a = 0.15 * i;
+      const rad = (r / 120) * i;
+      const px = x + rad * Math.cos(a);
+      const py = y + rad * Math.sin(a);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = 1.2; ctx.stroke();
+  }
+
+  function drawSquiggle(ctx, x, y, r, color) {
+    ctx.beginPath();
+    ctx.moveTo(x - r, y);
+    for (let i = 0; i <= 8; i++) {
+      const cx = x - r + (r * 2 / 8) * i;
+      const cy = y + (i % 2 === 0 ? -r * 0.4 : r * 0.4);
+      ctx.lineTo(cx, cy);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = 1.8; ctx.stroke();
+  }
+
+  function drawBurst(ctx, x, y, r, color) {
+    const lines = 10;
+    for (let i = 0; i < lines; i++) {
+      const a = (i / lines) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(a)*r*0.35, y + Math.sin(a)*r*0.35);
+      ctx.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r);
+      ctx.strokeStyle = color; ctx.lineWidth = 1.3; ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.25, 0, Math.PI * 2);
+    ctx.strokeStyle = color; ctx.lineWidth = 1.2; ctx.stroke();
+  }
+
+  function drawZigzag(ctx, x, y, r, color) {
+    ctx.beginPath();
+    const steps = 7;
+    for (let i = 0; i <= steps; i++) {
+      const px = x - r + (r * 2 / steps) * i;
+      const py = y + (i % 2 === 0 ? -r * 0.5 : r * 0.5);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = 1.8; ctx.stroke();
+  }
+
+  function drawLeaf(ctx, x, y, r, color) {
+    ctx.beginPath();
+    ctx.moveTo(x, y - r);
+    ctx.bezierCurveTo(x + r, y - r * 0.3, x + r, y + r * 0.3, x, y + r);
+    ctx.bezierCurveTo(x - r, y + r * 0.3, x - r, y - r * 0.3, x, y - r);
+    ctx.strokeStyle = color; ctx.lineWidth = 1.4; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y - r * 0.8);
+    ctx.lineTo(x, y + r * 0.8);
+    ctx.strokeStyle = color; ctx.lineWidth = 0.8; ctx.stroke();
+  }
+
+  function drawCross(ctx, x, y, r, color) {
+    const arms = 4;
+    for (let i = 0; i < arms; i++) {
+      const a = (i / arms) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r);
+      const bx = x + Math.cos(a)*r*0.7, by = y + Math.sin(a)*r*0.7;
+      const pa = a + Math.PI/2;
+      ctx.moveTo(bx + Math.cos(pa)*r*0.25, by + Math.sin(pa)*r*0.25);
+      ctx.lineTo(bx - Math.cos(pa)*r*0.25, by - Math.sin(pa)*r*0.25);
+      ctx.strokeStyle = color; ctx.lineWidth = 1.4; ctx.stroke();
+    }
+  }
+
+  function drawTriangle(ctx, x, y, r, color) {
+    ctx.beginPath();
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
+      i === 0 ? ctx.moveTo(x + Math.cos(a)*r, y + Math.sin(a)*r)
+              : ctx.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.beginPath();
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
+      i === 0 ? ctx.moveTo(x + Math.cos(a)*r*0.5, y + Math.sin(a)*r*0.5)
+              : ctx.lineTo(x + Math.cos(a)*r*0.5, y + Math.sin(a)*r*0.5);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = color; ctx.lineWidth = 0.8; ctx.stroke();
+  }
+
+  function drawWave(ctx, x, y, r, color) {
+    ctx.beginPath();
+    for (let i = 0; i <= 60; i++) {
+      const t = (i / 60);
+      const px = x - r + r * 2 * t;
+      const py = y + Math.sin(t * Math.PI * 3) * r * 0.45;
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  function drawDoodle(d) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, d.alpha));
+    ctx.translate(d.x, d.y);
+    ctx.rotate(d.rotation);
+    switch(d.type) {
+      case 'star':     drawStar(ctx, 0, 0, d.size, 5, d.color); break;
+      case 'spiral':   drawSpiral(ctx, 0, 0, d.size, d.color); break;
+      case 'squiggle': drawSquiggle(ctx, 0, 0, d.size, d.color); break;
+      case 'burst':    drawBurst(ctx, 0, 0, d.size, d.color); break;
+      case 'zigzag':   drawZigzag(ctx, 0, 0, d.size, d.color); break;
+      case 'leaf':     drawLeaf(ctx, 0, 0, d.size, d.color); break;
+      case 'cross':    drawCross(ctx, 0, 0, d.size, d.color); break;
+      case 'triangle': drawTriangle(ctx, 0, 0, d.size, d.color); break;
+      case 'wave':     drawWave(ctx, 0, 0, d.size, d.color); break;
+    }
+    ctx.restore();
+  }
+
+  function animateDoodles() {
+    ctx.clearRect(0, 0, dc.width, dc.height);
+    const now = Date.now();
+    doodles.forEach(d => {
+      d.x += d.drift.x + Math.sin((now / 2000) + d.phase) * 0.2;
+      d.y += d.drift.y + Math.cos((now / 2500) + d.phase) * 0.15;
+      d.rotation += d.rotSpeed;
+      d.alpha += d.alphaDir;
+      if (d.alpha > 0.92 || d.alpha < 0.15) d.alphaDir *= -1;
+      if (d.x < -80) d.x = dc.width + 80;
+      if (d.x > dc.width + 80) d.x = -80;
+      if (d.y < -80) d.y = dc.height + 80;
+      if (d.y > dc.height + 80) d.y = -80;
+      drawDoodle(d);
+    });
+    requestAnimationFrame(animateDoodles);
+  }
+  animateDoodles();
+
+  /* ── Custom Cursor ── */
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = (mx - 6) + 'px';
+    cursor.style.top  = (my - 6) + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.1;
+    ry += (my - ry) * 0.1;
+    ring.style.left = (rx - 18) + 'px';
+    ring.style.top  = (ry - 18) + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  /* ── Scroll Reveal ── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.skill-card, .exp-item, .project-card, .cert-item, .edu-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
